@@ -6,6 +6,7 @@ jobs:
     steps:
     - name: Install Dependencies
       run: npm install   
+    - name: Compile Code
       run: npm run build     
     - uses: actions/checkout@master
     - name: publish
