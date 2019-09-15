@@ -1,12 +1,12 @@
 {
   "name": "9anime",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A CLI script to scrape and watch shows from 9anime",
   "main": "./dist/index.js",
   "author": "Daniel Griffiths",
   "license": "MIT",
   "bin": {
-    "9anime": "./index.js"
+    "9anime": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
