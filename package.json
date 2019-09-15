@@ -1,14 +1,15 @@
 {
-  "name": "9anime-scraper",
+  "name": "9anime",
   "version": "1.0.0",
   "description": "A CLI script to scrape and watch shows from 9anime",
-  "main": "./index.js",
+  "main": "./build/index.js",
   "author": "Daniel Griffiths",
   "license": "MIT",
   "bin": {
     "9anime": "./index.js"
   },
   "scripts": {
+    "build": "tsc",
     "start": "ts-node index.ts",
     "postinstall": "touch node_modules/.metadata_never_index"
   },
