@@ -4,8 +4,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - name: Publish to NPM
-      run: npm install && npm run build   
+    - name: Publish to NPM 
     - uses: actions/checkout@master
       uses: actions/npm@master
       env:
