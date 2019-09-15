@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import ora from "ora";
 import open from "open";
 import inquirer from "inquirer";
