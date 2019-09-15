@@ -1,16 +1,16 @@
 
 {
-    "compilerOptions": {
-      "target": "es5",
-      "outDir": "dist",
-      "esModuleInterop": true,
-      "moduleResolution": "node"
-    },
-    "include": [
-      "index.ts"
-    ],
-    "exclude": [
-      "node_modules"
-    ]
-  }
-  
+  "compilerOptions": {
+    "target": "es6",
+    "outDir": "dist",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "moduleResolution": "node"
+  },
+  "include": [
+    "index.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
