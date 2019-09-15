@@ -24,7 +24,7 @@ import puppeteer from "puppeteer";
   await page.goto(`https://9anime.to/search?keyword=${anime}`);
 
   const shows = await page.evaluate(() =>
-    [...document.querySelectorAll(".film-list .item")].map(
+    [...(document.querySelectorAll(".film-list .item") as any)].map(
       (elem: HTMLElement) => {
         const imageElem: HTMLElement = elem.querySelector("img");
         const linkElem: HTMLElement = elem.querySelector("a:last-child");
@@ -65,16 +65,18 @@ import puppeteer from "puppeteer";
   await page.click(mp4UploadTab);
 
   const episodes = await page.evaluate(() =>
-    [...document.querySelectorAll(".episodes a")].map((elem: HTMLElement) => {
-      return {
-        key: elem.innerText,
-        name: `Episode ${elem.innerText}`,
-        value: {
-          text: elem.innerText,
-          href: elem.getAttribute("href"),
-        },
-      };
-    })
+    [...(document.querySelectorAll(".episodes a") as any)].map(
+      (elem: HTMLElement) => {
+        return {
+          key: elem.innerText,
+          name: `Episode ${elem.innerText}`,
+          value: {
+            text: elem.innerText,
+            href: elem.getAttribute("href"),
+          },
+        };
+      }
+    )
   );
 
   spinner.stop();
