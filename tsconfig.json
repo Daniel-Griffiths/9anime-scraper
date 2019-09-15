@@ -2,7 +2,7 @@
 {
     "compilerOptions": {
       "target": "es6",
-      "outDir": "build",
+      "outDir": "dist",
       "esModuleInterop": true,
       "moduleResolution": "node"
     },
