@@ -4,12 +4,10 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - name: Install Dependencies
+    - name: Publish to NPM
       run: npm install   
-    - name: Compile Code
       run: npm run build     
     - uses: actions/checkout@master
-    - name: publish
       uses: actions/npm@master
       env:
         NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
