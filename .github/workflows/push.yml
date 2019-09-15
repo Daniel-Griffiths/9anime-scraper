@@ -4,8 +4,8 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-    - name: Publish to NPM 
     - uses: actions/checkout@master
+    - name: publish
       uses: actions/npm@master
       env:
         NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
