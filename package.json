@@ -1,6 +1,6 @@
 {
   "name": "9anime",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "A CLI script to scrape and watch shows from 9anime",
   "main": "./dist/index.js",
   "author": "Daniel Griffiths",
@@ -10,8 +10,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "ts-node index.ts",
-    "postinstall": "touch node_modules/.metadata_never_index"
+    "start": "ts-node index.ts"
   },
   "repository": {
     "type": "git",
