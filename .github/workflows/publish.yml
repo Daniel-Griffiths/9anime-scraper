@@ -1,5 +1,6 @@
 on:
   release:
+    types: [published]
     branches:
     - master
 name: publish on release
