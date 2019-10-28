@@ -20,7 +20,7 @@
     "@types/inquirer": "^6.5.0",
     "@types/puppeteer": "^1.19.1",
     "inquirer": "^7.0.0",
-    "open": "^6.4.0",
+    "open": "^7.0.0",
     "ora": "^4.0.2",
     "puppeteer": "^1.20.0"
   },
