@@ -1,5 +1,7 @@
 import puppeteer from "puppeteer";
 
+let puppeteerInstance = null;
+
 interface Show {
   key: string;
   name: string;
@@ -81,9 +83,11 @@ export const getEpisodes = async (showUrl: string): Promise<Episode[]> => {
  * @returns {Promise<string>}
  */
 export const getVideo = async (episodeUrl: string): Promise<string> => {
-  const { page } = await _createBrowserInstance({ headless: false });
+  const { page } = await _createBrowserInstance();
 
   await page.goto(`https://9anime.to${episodeUrl}`);
+
+  await _clickVideoTab(page);
 
   await page.click(`#player`);
 
@@ -95,13 +99,9 @@ export const getVideo = async (episodeUrl: string): Promise<string> => {
 
   await page.goto(videoUrl);
 
-  const test = await page.evaluate(() =>
+  return await page.evaluate(() =>
     document.querySelector("video").getAttribute("src")
   );
-
-  console.log(test);
-
-  return test;
 };
 
 const _clickVideoTab = async (page: puppeteer.Page): Promise<void> => {
@@ -123,6 +123,10 @@ const _clickVideoTab = async (page: puppeteer.Page): Promise<void> => {
 const _createBrowserInstance = async (
   options?: puppeteer.LaunchOptions
 ): Promise<{ page: puppeteer.Page; browser: puppeteer.Browser }> => {
+  if (puppeteerInstance) {
+    return puppeteerInstance;
+  }
+
   const browser = await puppeteer.launch({
     ...{
       headless: true,
@@ -142,6 +146,8 @@ const _createBrowserInstance = async (
       request.continue();
     }
   });
+
+  puppeteerInstance = { page, browser };
 
   return { page, browser };
 };
