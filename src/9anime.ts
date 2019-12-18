@@ -22,8 +22,10 @@ interface Episode {
 }
 
 /**
- * @param {string} show The name of the anime we want to search
- * @returns {Show[]}
+ * Returns a list of shows based on the search query
+ *
+ * @param {string} show The name of the anime we want to search for
+ * @returns {Promise<Show[]>}
  */
 export const searchShow = async (show: string): Promise<Show[]> => {
   const { page } = await _createBrowserInstance();
@@ -50,7 +52,7 @@ export const searchShow = async (show: string): Promise<Show[]> => {
 };
 
 /**
- * Returns a list of episodes for the specified season.
+ * Returns a list of episodes for the specified show/season.
  *
  * @param {string} showUrl
  * @returns {Promise<Episode[]>}
@@ -108,6 +110,12 @@ export const getVideo = async (episodeUrl: string): Promise<string> => {
   return videoUrl;
 };
 
+/**
+ * Click the correct video tab.
+ *
+ * @param {puppeteer.Page} page
+ * @returns {Promise<void>}
+ */
 const _clickVideoTab = async (page: puppeteer.Page): Promise<void> => {
   const mp4UploadTab = '.tab[data-name="35"]';
 
