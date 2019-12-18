@@ -3,114 +3,73 @@
 import ora from "ora";
 import open from "open";
 import inquirer from "inquirer";
-import puppeteer from "puppeteer";
+import { searchShow, getEpisodes, getVideo } from "./src/9anime";
 
 (async () => {
-  const browser = await puppeteer.launch({
-    headless: true,
-    defaultViewport: null,
-  });
-
-  const page = await browser.newPage();
-
+  /**
+   * Get shows
+   */
   const { anime } = await inquirer.prompt([
     {
       type: "input",
       name: "anime",
-      message: "What anime are you looking for?",
-    },
+      message: "What anime are you looking for?"
+    }
   ]);
 
   const spinner = ora(`Searching for ${anime}`).start();
 
-  await page.goto(`https://9anime.to/search?keyword=${anime}`);
+  const shows = await searchShow(anime);
 
-  const shows = await page.evaluate(() =>
-    [...document.querySelectorAll(".film-list .item")].map(
-      (elem: HTMLElement) => {
-        const imageElem: HTMLElement = elem.querySelector("img");
-        const linkElem: HTMLElement = elem.querySelector("a:last-child");
-        return {
-          key: linkElem.innerText,
-          name: linkElem.innerText,
-          value: {
-            text: linkElem.innerText,
-            href: linkElem.getAttribute("href"),
-            image: imageElem.getAttribute("src"),
-          },
-        };
-      }
-    )
-  );
+  if (!shows || shows.length < 1) {
+    spinner.stop();
+    console.log(`Could not find any seasons for "${anime}"`);
+    process.exit();
+  }
 
   spinner.stop();
 
+  /**
+   * Get episodes
+   */
   const { show } = await inquirer.prompt([
     {
       type: "list",
       name: "show",
       choices: shows,
-      message: "Choose a season:",
-    },
+      message: "Choose a season:"
+    }
   ]);
 
   spinner.start("Getting episodes");
 
-  await page.goto(show.href);
+  const episodes = await getEpisodes(show.href);
 
-  const mp4UploadTab = '.tab[data-name="35"]';
-
-  await page.waitForSelector(mp4UploadTab);
-
-  // sometimes this needs to be clicked multiple times to work due to ads opening
-  await page.click(mp4UploadTab);
-  await page.click(mp4UploadTab);
-
-  const episodes = await page.evaluate(() =>
-    [...document.querySelectorAll(".episodes a")].map((elem: HTMLElement) => {
-      return {
-        key: elem.innerText,
-        name: `Episode ${elem.innerText}`,
-        value: {
-          text: elem.innerText,
-          href: elem.getAttribute("href"),
-        },
-      };
-    })
-  );
+  if (!episodes || episodes.length < 1) {
+    spinner.stop();
+    console.log(`Could not find any episodes for "${anime}"`);
+    process.exit();
+  }
 
   spinner.stop();
 
+  /**
+   * Play an episode
+   */
   const { episode } = await inquirer.prompt([
     {
       type: "list",
       name: "episode",
       choices: episodes,
-      message: "Choose a episode:",
-    },
+      message: "Choose a episode:"
+    }
   ]);
 
   spinner.start("Opening video");
 
-  await page.goto(`https://9anime.to${episode.href}`);
-
-  await page.click(`#player`);
-
-  await page.waitForSelector(`#player iframe`);
-
-  const videoUrl = await page.evaluate(() =>
-    document.querySelector("#player iframe").getAttribute("src")
-  );
-
-  await page.goto(videoUrl);
-
-  const videoFile = await page.evaluate(() =>
-    document.querySelector("video").getAttribute("src")
-  );
+  const videoFile = await getVideo(episode.href);
 
   spinner.stop();
 
   await open(videoFile, { app: ["vlc", "--fullscreen", "--play-and-exit"] });
-
-  await browser.close();
 })();
