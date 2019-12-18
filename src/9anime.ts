@@ -83,7 +83,7 @@ export const getEpisodes = async (showUrl: string): Promise<Episode[]> => {
  * @returns {Promise<string>}
  */
 export const getVideo = async (episodeUrl: string): Promise<string> => {
-  const { page } = await _createBrowserInstance();
+  const { page, browser } = await _createBrowserInstance();
 
   await page.goto(`https://9anime.to${episodeUrl}`);
 
@@ -93,15 +93,19 @@ export const getVideo = async (episodeUrl: string): Promise<string> => {
 
   await page.waitForSelector(`#player iframe`);
 
-  const videoUrl = await page.evaluate(() =>
+  const videoIframeUrl = await page.evaluate(() =>
     document.querySelector("#player iframe").getAttribute("src")
   );
 
-  await page.goto(videoUrl);
+  await page.goto(videoIframeUrl);
 
-  return await page.evaluate(() =>
+  const videoUrl = await page.evaluate(() =>
     document.querySelector("video").getAttribute("src")
   );
+
+  browser.close();
+
+  return videoUrl;
 };
 
 const _clickVideoTab = async (page: puppeteer.Page): Promise<void> => {
