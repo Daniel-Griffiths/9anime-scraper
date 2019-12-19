@@ -1,4 +1,4 @@
-import puppeteer from "puppeteer";
+import puppeteer, { Page, Browser, LaunchOptions } from "puppeteer";
 
 interface Show {
   key: string;
@@ -20,8 +20,8 @@ interface Episode {
 }
 
 interface PuppeteerInstance {
-  page: puppeteer.Page;
-  browser: puppeteer.Browser;
+  page: Page;
+  browser: Browser;
 }
 
 /**
@@ -111,12 +111,12 @@ export const getVideo = async (episodeUrl: string): Promise<string> =>
  * Creates a new puppeteer instance
  *
  * @param {({ page, browser }: PuppeteerInstance) => Promise<T>} callback
- * @param {puppeteer.LaunchOptions} options
- * @returns {Promise<{page: puppeteer.Page, browser: puppeteer.Browser}>}}
+ * @param {LaunchOptions} options
+ * @returns {Promise<T>}}
  */
 const _createBrowserInstance = async <T>(
   callback: ({ page, browser }: PuppeteerInstance) => Promise<T>,
-  options?: puppeteer.LaunchOptions
+  options?: LaunchOptions
 ): Promise<T> => {
   const browser = await puppeteer.launch({
     ...{
