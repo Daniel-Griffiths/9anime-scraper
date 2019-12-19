@@ -1,7 +1,5 @@
 import puppeteer from "puppeteer";
 
-let puppeteerInstance = null;
-
 interface Show {
   key: string;
   name: string;
@@ -27,14 +25,12 @@ interface Episode {
  * @param {string} show The name of the anime we want to search for
  * @returns {Promise<Show[]>}
  */
-export const searchShow = async (show: string): Promise<Show[]> => {
-  const { page } = await _createBrowserInstance();
+export const searchShows = async (show: string): Promise<Show[]> =>
+  await _createBrowserInstance(async ({ page }) => {
+    await page.goto(`https://9anime.to/search?keyword=${show}`);
 
-  await page.goto(`https://9anime.to/search?keyword=${show}`);
-
-  return await page.evaluate(() =>
-    [...document.querySelectorAll(".film-list .item")].map(
-      (elem: HTMLElement) => {
+    return await page.$$eval(".film-list .item", elements =>
+      elements.map((elem: HTMLElement) => {
         const imageElem: HTMLElement = elem.querySelector("img");
         const linkElem: HTMLElement = elem.querySelector("a:last-child");
         return {
@@ -46,10 +42,9 @@ export const searchShow = async (show: string): Promise<Show[]> => {
             image: imageElem.getAttribute("src")
           }
         };
-      }
-    )
-  );
-};
+      })
+    );
+  });
 
 /**
  * Returns a list of episodes for the specified show/season.
@@ -57,26 +52,32 @@ export const searchShow = async (show: string): Promise<Show[]> => {
  * @param {string} showUrl
  * @returns {Promise<Episode[]>}
  */
-export const getEpisodes = async (showUrl: string): Promise<Episode[]> => {
-  const { page } = await _createBrowserInstance();
+export const getEpisodes = async (showUrl: string): Promise<Episode[]> =>
+  await _createBrowserInstance(async ({ page }) => {
+    await page.goto(showUrl);
 
-  await page.goto(showUrl);
+    const mp4UploadTab = '.tab[data-name="35"]';
 
-  await _clickVideoTab(page);
+    await page.waitForSelector(mp4UploadTab);
 
-  return await page.evaluate(() =>
-    [...document.querySelectorAll(".episodes a")].map((elem: HTMLElement) => {
-      return {
-        key: elem.innerText,
-        name: `Episode ${elem.innerText}`,
-        value: {
-          text: elem.innerText,
-          href: elem.getAttribute("href")
-        }
-      };
-    })
-  );
-};
+    // sometimes this needs to be clicked multiple times to work due to ads opening
+    await page.click(mp4UploadTab, {
+      clickCount: 5
+    });
+
+    return await page.$$eval('.server[data-name="35"] .episodes a', elements =>
+      elements.map((elem: HTMLElement) => {
+        return {
+          key: elem.innerText,
+          name: `Episode ${elem.innerText}`,
+          value: {
+            text: elem.innerText,
+            href: `https://9anime.to${elem.getAttribute("href")}`
+          }
+        };
+      })
+    );
+  });
 
 /**
  * Returns a video url for the specified episode.
@@ -84,47 +85,22 @@ export const getEpisodes = async (showUrl: string): Promise<Episode[]> => {
  * @param {string} episodeUrl
  * @returns {Promise<string>}
  */
-export const getVideo = async (episodeUrl: string): Promise<string> => {
-  const { page, browser } = await _createBrowserInstance();
+export const getVideo = async (episodeUrl: string): Promise<string> =>
+  await _createBrowserInstance(async ({ page }) => {
+    await page.goto(episodeUrl);
 
-  await page.goto(`https://9anime.to${episodeUrl}`);
+    await page.click(`#player`);
 
-  await _clickVideoTab(page);
+    await page.waitForSelector(`#player iframe`);
 
-  await page.click(`#player`);
+    const videoIframeUrl = await page.$eval("#player iframe", element =>
+      element.getAttribute("src")
+    );
 
-  await page.waitForSelector(`#player iframe`);
+    await page.goto(videoIframeUrl);
 
-  const videoIframeUrl = await page.evaluate(() =>
-    document.querySelector("#player iframe").getAttribute("src")
-  );
-
-  await page.goto(videoIframeUrl);
-
-  const videoUrl = await page.evaluate(() =>
-    document.querySelector("video").getAttribute("src")
-  );
-
-  browser.close();
-
-  return videoUrl;
-};
-
-/**
- * Click the correct video tab.
- *
- * @param {puppeteer.Page} page
- * @returns {Promise<void>}
- */
-const _clickVideoTab = async (page: puppeteer.Page): Promise<void> => {
-  const mp4UploadTab = '.tab[data-name="35"]';
-
-  await page.waitForSelector(mp4UploadTab);
-
-  // sometimes this needs to be clicked multiple times to work due to ads opening
-  await page.click(mp4UploadTab);
-  await page.click(mp4UploadTab);
-};
+    return await page.$eval("video", element => element.getAttribute("src"));
+  });
 
 /**
  * Creates a new puppeteer instance
@@ -132,13 +108,16 @@ const _clickVideoTab = async (page: puppeteer.Page): Promise<void> => {
  * @param {puppeteer.LaunchOptions} options
  * @returns {Promise<{page: puppeteer.Page, browser: puppeteer.Browser}>}}
  */
-const _createBrowserInstance = async (
+const _createBrowserInstance = async <T>(
+  callback: ({
+    page,
+    browser
+  }: {
+    page: puppeteer.Page;
+    browser: puppeteer.Browser;
+  }) => Promise<T>,
   options?: puppeteer.LaunchOptions
-): Promise<{ page: puppeteer.Page; browser: puppeteer.Browser }> => {
-  if (puppeteerInstance) {
-    return puppeteerInstance;
-  }
-
+): Promise<T> => {
   const browser = await puppeteer.launch({
     ...{
       headless: true,
@@ -159,7 +138,9 @@ const _createBrowserInstance = async (
     }
   });
 
-  puppeteerInstance = { page, browser };
+  const returnValue = await callback({ page, browser });
 
-  return { page, browser };
+  browser.close();
+
+  return returnValue;
 };
