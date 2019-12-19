@@ -19,6 +19,11 @@ interface Episode {
   };
 }
 
+interface PuppeteerInstance {
+  page: puppeteer.Page;
+  browser: puppeteer.Browser;
+}
+
 /**
  * Returns a list of shows based on the search query
  *
@@ -26,7 +31,7 @@ interface Episode {
  * @returns {Promise<Show[]>}
  */
 export const searchShows = async (show: string): Promise<Show[]> =>
-  await _createBrowserInstance(async ({ page }) => {
+  await _createBrowserInstance<Show[]>(async ({ page }) => {
     await page.goto(`https://9anime.to/search?keyword=${show}`);
 
     return await page.$$eval(".film-list .item", elements =>
@@ -53,7 +58,7 @@ export const searchShows = async (show: string): Promise<Show[]> =>
  * @returns {Promise<Episode[]>}
  */
 export const getEpisodes = async (showUrl: string): Promise<Episode[]> =>
-  await _createBrowserInstance(async ({ page }) => {
+  await _createBrowserInstance<Episode[]>(async ({ page }) => {
     await page.goto(showUrl);
 
     const mp4UploadTab = '.tab[data-name="35"]';
@@ -86,7 +91,7 @@ export const getEpisodes = async (showUrl: string): Promise<Episode[]> =>
  * @returns {Promise<string>}
  */
 export const getVideo = async (episodeUrl: string): Promise<string> =>
-  await _createBrowserInstance(async ({ page }) => {
+  await _createBrowserInstance<string>(async ({ page }) => {
     await page.goto(episodeUrl);
 
     await page.click(`#player`);
@@ -105,17 +110,12 @@ export const getVideo = async (episodeUrl: string): Promise<string> =>
 /**
  * Creates a new puppeteer instance
  *
+ * @param {({ page, browser }: PuppeteerInstance) => Promise<T>} callback
  * @param {puppeteer.LaunchOptions} options
  * @returns {Promise<{page: puppeteer.Page, browser: puppeteer.Browser}>}}
  */
 const _createBrowserInstance = async <T>(
-  callback: ({
-    page,
-    browser
-  }: {
-    page: puppeteer.Page;
-    browser: puppeteer.Browser;
-  }) => Promise<T>,
+  callback: ({ page, browser }: PuppeteerInstance) => Promise<T>,
   options?: puppeteer.LaunchOptions
 ): Promise<T> => {
   const browser = await puppeteer.launch({
