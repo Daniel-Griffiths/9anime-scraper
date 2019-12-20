@@ -1,6 +1,6 @@
 {
   "name": "9anime",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "A CLI script to scrape and watch shows from 9anime",
   "main": "./dist/index.js",
   "author": "Daniel Griffiths",
@@ -10,6 +10,7 @@
     "test": "jest",
     "start": "ts-node index.ts"
   },
+  "prepare" : "yarn build",
   "bin": {
     "9anime": "./dist/src/cli.js"
   },
