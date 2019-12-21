@@ -1,37 +1,15 @@
-import puppeteer, { Page, Browser, LaunchOptions } from "puppeteer";
+import puppeteer, { LaunchOptions } from "puppeteer";
 
-interface Show {
-  key: string;
-  name: string;
-  value: {
-    text: string;
-    href: string;
-    image: string;
-  };
-}
-
-interface Episode {
-  key: string;
-  name: string;
-  value: {
-    text: string;
-    href: string;
-  };
-}
-
-interface PuppeteerInstance {
-  page: Page;
-  browser: Browser;
-}
+import { IShow, IEpisode, IPuppeteerInstance } from './types'
 
 /**
  * Returns a list of shows based on the search query
  *
  * @param {string} show The name of the anime we want to search for
- * @returns {Promise<Show[]>}
+ * @returns {Promise<IShow[]>}
  */
-export const searchShows = async (show: string): Promise<Show[]> =>
-  await _createBrowserInstance<Show[]>(async ({ page }) => {
+export const searchShows = async (show: string): Promise<IShow[]> =>
+  await _createBrowserInstance<IShow[]>(async ({ page }) => {
     await page.goto(`https://9anime.to/search?keyword=${show}`);
 
     return await page.$$eval(".film-list .item", elements =>
@@ -55,10 +33,10 @@ export const searchShows = async (show: string): Promise<Show[]> =>
  * Returns a list of episodes for the specified show/season.
  *
  * @param {string} showUrl
- * @returns {Promise<Episode[]>}
+ * @returns {Promise<IEpisode[]>}
  */
-export const getEpisodes = async (showUrl: string): Promise<Episode[]> =>
-  await _createBrowserInstance<Episode[]>(async ({ page }) => {
+export const getEpisodes = async (showUrl: string): Promise<IEpisode[]> =>
+  await _createBrowserInstance<IEpisode[]>(async ({ page }) => {
     await page.goto(showUrl);
 
     const mp4UploadTab = '.tab[data-name="35"]';
@@ -110,12 +88,12 @@ export const getVideo = async (episodeUrl: string): Promise<string> =>
 /**
  * Creates a new puppeteer instance
  *
- * @param {({ page, browser }: PuppeteerInstance) => Promise<T>} callback
+ * @param {({ page, browser }: IPuppeteerInstance) => Promise<T>} callback
  * @param {LaunchOptions} options
  * @returns {Promise<T>}}
  */
 const _createBrowserInstance = async <T>(
-  callback: ({ page, browser }: PuppeteerInstance) => Promise<T>,
+  callback: ({ page, browser }: IPuppeteerInstance) => Promise<T>,
   options?: LaunchOptions
 ): Promise<T> => {
   const browser = await puppeteer.launch({
