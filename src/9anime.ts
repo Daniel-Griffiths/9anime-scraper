@@ -17,13 +17,9 @@ export const searchShows = async (show: string): Promise<IShow[]> =>
         const imageElem: HTMLElement = elem.querySelector("img");
         const linkElem: HTMLElement = elem.querySelector("a:last-child");
         return {
-          key: linkElem.innerText,
           name: linkElem.innerText,
-          value: {
-            text: linkElem.innerText,
-            href: linkElem.getAttribute("href"),
-            image: imageElem.getAttribute("src")
-          }
+          url: linkElem.getAttribute("href"),
+          image: imageElem.getAttribute("src")
         };
       })
     );
@@ -51,12 +47,8 @@ export const getEpisodes = async (showUrl: string): Promise<IEpisode[]> =>
     return await page.$$eval('.server[data-name="35"] .episodes a', elements =>
       elements.map((elem: HTMLElement) => {
         return {
-          key: elem.innerText,
           name: `Episode ${elem.innerText}`,
-          value: {
-            text: elem.innerText,
-            href: `https://9anime.to${elem.getAttribute("href")}`
-          }
+          url: `https://9anime.to${elem.getAttribute("href")}`
         };
       })
     );

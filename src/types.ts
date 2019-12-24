@@ -1,25 +1,17 @@
 import { Page, Browser } from "puppeteer";
 
 export interface IShow {
-    key: string;
-    name: string;
-    value: {
-      text: string;
-      href: string;
-      image: string;
-    };
-  }
-  
+  url: string;
+  name: string;
+  image: string;
+}
+
 export interface IEpisode {
-    key: string;
-    name: string;
-    value: {
-        text: string;
-        href: string;
-    };
+  url: string;
+  name: string;
 }
 
 export interface IPuppeteerInstance {
-    page: Page;
-    browser: Browser;
+  page: Page;
+  browser: Browser;
 }

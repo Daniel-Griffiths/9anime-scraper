@@ -1,6 +1,6 @@
 {
   "name": "9anime",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "A CLI script to scrape and watch shows from 9anime",
   "main": "./dist/index.js",
   "author": "Daniel Griffiths",
@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "start": "ts-node index.ts"
+    "start": "ts-node ./src/cli.ts"
   },
   "prepublish": "tsc",
   "types": "dist/index.d.ts",

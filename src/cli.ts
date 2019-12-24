@@ -5,6 +5,24 @@ import open from "open";
 import inquirer from "inquirer";
 import { searchShows, getEpisodes, getVideo } from "./9anime";
 
+/**
+ * Convert objects to be
+ * used in inquirer prompts
+ *
+ * @param {T[]} items
+ * @returns {{value: T, name: string}[]}
+ */
+function _toInquirerQuestions<T extends { name: string }>(
+  items: T[]
+): { value: T; name: string }[] {
+  return items.map(item => {
+    return {
+      value: item,
+      name: item.name
+    };
+  });
+}
+
 (async () => {
   /**
    * Get shows
@@ -36,14 +54,14 @@ import { searchShows, getEpisodes, getVideo } from "./9anime";
     {
       type: "list",
       name: "show",
-      choices: shows,
-      message: "Choose a season:"
+      message: "Choose a season:",
+      choices: _toInquirerQuestions(shows)
     }
   ]);
 
   spinner.start("Getting episodes");
 
-  const episodes = await getEpisodes(show.href);
+  const episodes = await getEpisodes(show.url);
 
   if (!episodes || episodes.length < 1) {
     spinner.stop();
@@ -60,14 +78,14 @@ import { searchShows, getEpisodes, getVideo } from "./9anime";
     {
       type: "list",
       name: "episode",
-      choices: episodes,
-      message: "Choose a episode:"
+      message: "Choose a episode:",
+      choices: _toInquirerQuestions(episodes)
     }
   ]);
 
   spinner.start("Opening video");
 
-  const videoFile = await getVideo(episode.href);
+  const videoFile = await getVideo(episode.url);
 
   spinner.stop();
 
