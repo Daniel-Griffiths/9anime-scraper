@@ -11,6 +11,11 @@ export interface IEpisode {
   name: string;
 }
 
+export interface IVideo {
+  video: string;
+  iframe: string;
+}
+
 export interface IPuppeteerInstance {
   page: Page;
   browser: Browser;

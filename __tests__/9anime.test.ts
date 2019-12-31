@@ -5,7 +5,7 @@ it(
   async () => {
     const [show] = await searchShows("jojo");
     const [episode] = await getEpisodes(show.url);
-    const video = await getVideo(episode.url);
+    const { video } = await getVideo(episode.url);
 
     expect(video).toMatch(new RegExp("https://(.*)/video.mp4"));
   },

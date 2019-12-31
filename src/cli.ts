@@ -85,9 +85,9 @@ function _toInquirerQuestions<T extends { name: string }>(
 
   spinner.start("Opening video");
 
-  const videoFile = await getVideo(episode.url);
+  const { video } = await getVideo(episode.url);
 
   spinner.stop();
 
-  await open(videoFile, { app: ["vlc", "--fullscreen", "--play-and-exit"] });
+  await open(video, { app: ["vlc", "--fullscreen", "--play-and-exit"] });
 })();

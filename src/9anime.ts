@@ -1,6 +1,6 @@
 import puppeteer, { LaunchOptions } from "puppeteer";
 
-import { IShow, IEpisode, IPuppeteerInstance } from './types'
+import { IShow, IVideo, IEpisode, IPuppeteerInstance } from "./types";
 
 /**
  * Returns a list of shows based on the search query
@@ -58,10 +58,10 @@ export const getEpisodes = async (showUrl: string): Promise<IEpisode[]> =>
  * Returns a video url for the specified episode.
  *
  * @param {string} episodeUrl
- * @returns {Promise<string>}
+ * @returns {Promise<IVideo>}
  */
-export const getVideo = async (episodeUrl: string): Promise<string> =>
-  await _createBrowserInstance<string>(async ({ page }) => {
+export const getVideo = async (episodeUrl: string): Promise<IVideo> =>
+  await _createBrowserInstance<IVideo>(async ({ page }) => {
     await page.goto(episodeUrl);
 
     await page.click(`#player`);
@@ -74,7 +74,14 @@ export const getVideo = async (episodeUrl: string): Promise<string> =>
 
     await page.goto(videoIframeUrl);
 
-    return await page.$eval("video", element => element.getAttribute("src"));
+    const videoUrl = await page.$eval("video", element =>
+      element.getAttribute("src")
+    );
+
+    return {
+      video: videoUrl,
+      iframe: videoIframeUrl
+    };
   });
 
 /**

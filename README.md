@@ -43,5 +43,5 @@ import { searchShows, getEpisodes, getVideo } from "9anime";
 
 const [show] = await searchShows("jojo");
 const [episode] = await getEpisodes(show.url);
-const videoUrl = await getVideo(episode.url);
+const { video } = await getVideo(episode.url);
 ```
