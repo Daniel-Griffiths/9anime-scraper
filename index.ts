@@ -1,4 +1,15 @@
 import { createPuppeteerInstance } from "./src/puppeteer";
-import { searchShows, getEpisodes, getVideo } from "./src/9anime";
+import {
+  getVideo,
+  searchShows,
+  getEpisodes,
+  scrapeAllShows
+} from "./src/9anime";
 
-export { searchShows, getEpisodes, getVideo, createPuppeteerInstance };
+export {
+  getVideo,
+  searchShows,
+  getEpisodes,
+  scrapeAllShows,
+  createPuppeteerInstance
+};
