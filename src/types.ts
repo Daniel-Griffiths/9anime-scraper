@@ -11,6 +11,12 @@ export interface IEpisode {
   name: string;
 }
 
+export interface ILink {
+  url: string;
+  name: string;
+  image: string;
+}
+
 export interface IVideo {
   video: string;
   iframe: string;
