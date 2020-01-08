@@ -1,4 +1,4 @@
-import { getVideo, searchShows, getEpisodes } from "./../src/9anime";
+import { Anime } from "./../src/9anime";
 
 import { createPuppeteerInstance } from "./../src/puppeteer";
 
@@ -7,13 +7,15 @@ it(
   async () => {
     const puppeteerInstance = await createPuppeteerInstance();
 
-    const [show] = await searchShows(puppeteerInstance, "jojo");
-    const [episode] = await getEpisodes(puppeteerInstance, show.url);
-    const { video } = await getVideo(puppeteerInstance, episode.url);
+    const anime = new Anime(puppeteerInstance);
+
+    const [show] = await anime.search("jojo");
+    const [episode] = await anime.getEpisodes(show.url);
+    const { video } = await anime.getVideo(episode.url);
 
     expect(video).toMatch(new RegExp("https://(.*)/video.mp4"));
 
-    puppeteerInstance.browser.close();
+    anime.close();
   },
   1000 * 30
 );

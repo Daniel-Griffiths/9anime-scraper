@@ -39,26 +39,23 @@ yarn add 9anime
 **Example Usage**
 
 ```ts
-import {
-  getVideo,
-  searchShows,
-  getEpisodes,
-  createPuppeteerInstance
-} from "9anime";
+import { Anime, createPuppeteerInstance } from "9anime";
 
 // Create a new instance of puppeteer,
 // You can replace this with a custom instance if required
 const puppeteerInstance = await createPuppeteerInstance();
 
+const anime = new Anime(puppeteerInstance);
+
 // Destructure and get the first show in the search results
-const [show] = await searchShows(puppeteerInstance, "jojo");
+const [show] = await anime.search("jojo");
 
 // Destructure and get the first episode of that show
-const [episode] = await getEpisodes(puppeteerInstance, show.url);
+const [episode] = await anime.getEpisodes(show.url);
 
 // Get the video url for the selected episode
-const { video } = await getVideo(puppeteerInstance, episode.url);
+const { video } = await anime.getVideo(episode.url);
 
 // Close puppeteer and free resources
-puppeteerInstance.browser.close();
+anime.close();
 ```

@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-import fs from "fs";
 import ora from "ora";
 import open from "open";
 import inquirer from "inquirer";
 
+import { Anime } from "./9anime";
 import { createPuppeteerInstance } from "./puppeteer";
-import { searchShows, getEpisodes, getVideo, scrapeAllShows } from "./9anime";
 
 /**
  * Convert objects to be
@@ -28,6 +27,7 @@ function _toInquirerQuestions<T extends { name: string }>(
 
 (async () => {
   const puppeteerInstance = await createPuppeteerInstance();
+  const scraper = new Anime(puppeteerInstance);
 
   /**
    * Get shows
@@ -42,7 +42,7 @@ function _toInquirerQuestions<T extends { name: string }>(
 
   const spinner = ora(`Searching for ${anime}`).start();
 
-  const shows = await searchShows(puppeteerInstance, anime);
+  const shows = await scraper.search(anime);
 
   if (!shows || shows.length < 1) {
     spinner.stop();
@@ -66,7 +66,7 @@ function _toInquirerQuestions<T extends { name: string }>(
 
   spinner.start("Getting episodes");
 
-  const episodes = await getEpisodes(puppeteerInstance, show.url);
+  const episodes = await scraper.getEpisodes(show.url);
 
   if (!episodes || episodes.length < 1) {
     spinner.stop();
@@ -90,7 +90,7 @@ function _toInquirerQuestions<T extends { name: string }>(
 
   spinner.start("Opening video");
 
-  const { video } = await getVideo(puppeteerInstance, episode.url);
+  const { video } = await scraper.getVideo(episode.url);
 
   spinner.stop();
 
