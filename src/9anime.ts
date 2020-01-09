@@ -9,7 +9,7 @@ export class Anime extends Scraper {
    * @returns {Promise<IShow[]>}
    */
   public search = async (show: string): Promise<IShow[]> => {
-    await this.puppeteer.page.goto(`https://9anime.to/search?keyword=${show}`);
+    await this.goto(`https://9anime.to/search?keyword=${show}`);
 
     return await this.puppeteer.page.$$eval(".film-list .item", elements =>
       elements.map((elem: HTMLElement) => {
@@ -33,7 +33,7 @@ export class Anime extends Scraper {
   public getEpisodes = async (showUrl: string): Promise<IEpisode[]> => {
     const mp4UploadTab = '.tab[data-name="35"]';
 
-    await this.puppeteer.page.goto(showUrl);
+    await this.goto(showUrl);
     await this.puppeteer.page.waitForSelector(mp4UploadTab);
 
     // sometimes this needs to be clicked multiple times to work due to ads opening
@@ -60,7 +60,7 @@ export class Anime extends Scraper {
    * @returns {Promise<IVideo>}
    */
   public getVideo = async (episodeUrl: string): Promise<IVideo> => {
-    await this.puppeteer.page.goto(episodeUrl);
+    await this.goto(episodeUrl);
     await this.puppeteer.page.waitForSelector(`#player`);
     await this.puppeteer.page.click(`#player`);
     await this.puppeteer.page.waitForSelector(`#player iframe`);
@@ -104,7 +104,7 @@ export class Anime extends Scraper {
     pageNumber: number = 1,
     initialLinks: ILink[] = []
   ) => {
-    await this.puppeteer.page.goto(
+    await this.goto(
       `https://9anime.to/az-list?page=${pageNumber}`
     );
 
