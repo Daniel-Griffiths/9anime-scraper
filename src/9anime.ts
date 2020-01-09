@@ -70,17 +70,9 @@ export class Anime extends Scraper {
       element => element.getAttribute("src")
     );
 
-    await this.puppeteer.page.waitFor(1000)
+    await this.puppeteer.page.goto(videoIframeUrl)
 
-    const frame = await this.puppeteer.page
-      .frames()
-      .find(frame => {
-        return frame.url() === videoIframeUrl
-      });
-
-    await frame.waitForSelector('video');
-
-    const videoUrl = await frame.$eval("video", element =>
+    const videoUrl = await this.puppeteer.page.$eval("video", element =>
       element.getAttribute("src")
     );
 
