@@ -25,11 +25,32 @@ export const createPuppeteerInstance = async (
   await page.setRequestInterception(true);
 
   await page.on("request", request => {
-    if (["image", "font", "json"].indexOf(request.resourceType()) !== -1) {
-      request.abort();
-    } else {
-      request.continue();
+    const blacklistedDomains = [
+      "disqus.com",
+      "defpush.com",
+      "twitter.com",
+      "facebook.com",
+      "mp4upload.com",
+      "indlzxgptf.com",
+      "google-analytics.com",
+      "connect.facebook.net",
+      "platform.twitter.com",
+      "links.services.disqus.com",
+      "cdn.runative-syndicate.com",
+      "9anime.to/user/ajax/menu-bar"
+    ]
+
+    const blacklistedFileTypes = ["image", "font", "json", "media"]
+
+    if (blacklistedDomains.includes(new URL(request.url()).host)) {
+      return request.abort();
     }
+
+    if (blacklistedFileTypes.indexOf(request.resourceType()) !== -1) {
+      return request.abort();
+    } 
+
+    return request.continue();
   });
 
   return { page, browser };
