@@ -11,7 +11,11 @@ import { IPuppeteerInstance } from "./types";
 export const createPuppeteerInstance = async (
   options: LaunchOptions = {
     headless: true,
-    defaultViewport: null
+    defaultViewport: null,
+    'args' : [
+      '--no-sandbox',
+      '--disable-setuid-sandbox'
+    ]
   }
 ): Promise<IPuppeteerInstance> => {
   const browser = await puppeteer.launch(options);
