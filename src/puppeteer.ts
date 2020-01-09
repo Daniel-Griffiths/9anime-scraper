@@ -25,7 +25,7 @@ export const createPuppeteerInstance = async (
   await page.setRequestInterception(true);
 
   await page.on("request", request => {
-    if (["image", "font"].indexOf(request.resourceType()) !== -1) {
+    if (["image", "font", "json"].indexOf(request.resourceType()) !== -1) {
       request.abort();
     } else {
       request.continue();
