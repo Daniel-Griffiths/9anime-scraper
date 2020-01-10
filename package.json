@@ -1,6 +1,6 @@
 {
   "name": "9anime",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "A CLI script to scrape and watch shows from 9anime",
   "main": "./dist/index.js",
   "author": "Daniel Griffiths",

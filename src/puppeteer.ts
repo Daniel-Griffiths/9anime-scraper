@@ -14,7 +14,8 @@ export const createPuppeteerInstance = async (
     defaultViewport: null,
     'args' : [
       '--no-sandbox',
-      '--disable-setuid-sandbox'
+      '--disable-dev-shm-usage',
+      '--disable-setuid-sandbox',
     ]
   }
 ): Promise<IPuppeteerInstance> => {
