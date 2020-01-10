@@ -1,18 +1,12 @@
-
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es2018",
     "outDir": "dist",
     "declaration": true,
     "module": "commonjs",
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
-  "include": [
-    "index.ts",
-    "src/cli.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["index.ts", "src/cli.ts"],
+  "exclude": ["node_modules"]
 }
