@@ -62,7 +62,9 @@ export class Anime extends Scraper {
   public getVideo = async (episodeUrl: string): Promise<IVideo> => {
     await this.goto(episodeUrl);
     await this.puppeteer.page.waitForSelector(`#player`);
-    await this.puppeteer.page.click(`#player`);
+    await this.puppeteer.page.click(`#player`, {
+      clickCount: 5
+    });
     await this.puppeteer.page.waitForSelector(`#player iframe`);
 
     const videoIframeUrl = await this.puppeteer.page.$eval(
@@ -70,7 +72,7 @@ export class Anime extends Scraper {
       element => element.getAttribute("src")
     );
 
-    await this.puppeteer.page.goto(videoIframeUrl)
+    await this.goto(videoIframeUrl);
 
     const videoUrl = await this.puppeteer.page.$eval("video", element =>
       element.getAttribute("src")
@@ -96,9 +98,7 @@ export class Anime extends Scraper {
     pageNumber: number = 1,
     initialLinks: ILink[] = []
   ) => {
-    await this.goto(
-      `https://9anime.to/az-list?page=${pageNumber}`
-    );
+    await this.goto(`https://9anime.to/az-list?page=${pageNumber}`);
 
     const links = await this.puppeteer.page.$$eval(".items .item", elements =>
       elements.map((elem: HTMLElement) => {
