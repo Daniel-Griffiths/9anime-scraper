@@ -1,4 +1,5 @@
-import puppeteer, { LaunchOptions } from "puppeteer";
+import puppeteer from "puppeteer";
+import { LaunchOptions } from "puppeteer";
 
 import { IPuppeteerInstance } from "./types";
 

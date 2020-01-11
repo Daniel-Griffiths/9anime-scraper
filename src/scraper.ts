@@ -25,7 +25,7 @@ export class Scraper {
     const headers = response.headers();
     const status = headers.status;
 
-    if (status !== "200" && retries < 5) {
+    if (status && status !== "200" && retries < 5) {
       await this.puppeteer.page.waitFor(2000);
       return await this.goto(url, retries + 1);
     }
