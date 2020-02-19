@@ -1,5 +1,5 @@
+import { api } from "./api";
 import { Scraper } from "./scraper";
-import { ClickOptions } from "puppeteer";
 import { IShow, IVideo, IEpisode, ILink, IShowDetails } from "./types";
 
 export class Anime extends Scraper {
@@ -122,24 +122,18 @@ export class Anime extends Scraper {
   ): Promise<IVideo> => {
     await this.goto(episodeUrl);
 
-    const clickOptions: ClickOptions = {
-      clickCount: 5
-    };
-
-    await this.puppeteer.page.waitFor(1000);
-
     await this.puppeteer.page.waitForSelector(`.episodes .active`);
-    await this.puppeteer.page.click(`.episodes .active`, clickOptions);
 
-    await this.puppeteer.page.waitForSelector(`#player`);
-    await this.puppeteer.page.click(`#player`, clickOptions);
-
-    await this.puppeteer.page.waitForSelector(`#player iframe`);
-
-    const videoIframeUrl = await this.puppeteer.page.$eval(
-      "#player iframe",
-      element => element.getAttribute("src")
+    const videoId = await this.puppeteer.page.$eval(
+      ".episodes .active",
+      element => element.getAttribute("data-id")
     );
+
+    const { data } = await api.get(
+      `ajax/episode/info?ts=1582099200&_=780&id=${videoId}&server=35`
+    );
+
+    const videoIframeUrl = data.target;
 
     /**
      * It is much faster to only get the iframe url if that's all we need
