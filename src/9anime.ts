@@ -1,5 +1,6 @@
 import { Scraper } from "./scraper";
-import { IShow, IVideo, IEpisode, ILink } from "./types";
+import { ClickOptions } from "puppeteer";
+import { IShow, IVideo, IEpisode, ILink, IShowDetails } from "./types";
 
 export class Anime extends Scraper {
   /**
@@ -22,6 +23,61 @@ export class Anime extends Scraper {
         };
       })
     );
+  };
+
+  /**
+   * Returns all the details for the specified show
+   *
+   * @param {string} showUrl
+   * @returns {Promise<IShowDetails>}
+   */
+  public getShowDetails = async (showUrl: string): Promise<IShowDetails> => {
+    await this.goto(showUrl);
+
+    const name = await this.$eval(
+      ".title",
+      (element: HTMLElement) => element.innerText
+    );
+
+    const description = await this.$eval(
+      ".long",
+      (element: HTMLElement) => element.innerText
+    );
+
+    const type = await this.$eval(
+      "dl.meta:nth-child(1) dd:nth-of-type(1)",
+      (element: HTMLElement) => element.innerText
+    );
+
+    const completed = await this.$eval(
+      "dl.meta:nth-child(1) dd:nth-of-type(4)",
+      (element: HTMLElement) => element.innerText === "Completed"
+    );
+
+    const genres = await this.$eval(
+      "dl.meta:nth-child(1) dd:nth-of-type(5)",
+      (element: HTMLElement) => element.innerText.split(", ")
+    );
+
+    const duration = await this.$eval(
+      "dl.meta:nth-child(2) dd:nth-of-type(4)",
+      (element: HTMLElement) => element.innerText
+    );
+
+    const premiered = await this.$eval(
+      "dl.meta:nth-child(2) dd:nth-of-type(3)",
+      (element: HTMLElement) => element.innerText
+    );
+
+    return {
+      name,
+      type,
+      genres,
+      duration,
+      premiered,
+      completed,
+      description
+    };
   };
 
   /**
@@ -57,20 +113,43 @@ export class Anime extends Scraper {
    * Returns a video url for the specified episode.
    *
    * @param {string} episodeUrl
+   * @param {object} options
    * @returns {Promise<IVideo>}
    */
-  public getVideo = async (episodeUrl: string): Promise<IVideo> => {
+  public getVideo = async (
+    episodeUrl: string,
+    options?: { onlyGetIframeUrl: boolean }
+  ): Promise<IVideo> => {
     await this.goto(episodeUrl);
-    await this.puppeteer.page.waitForSelector(`#player`);
-    await this.puppeteer.page.click(`#player`, {
+
+    const clickOptions: ClickOptions = {
       clickCount: 5
-    });
+    };
+
+    await this.puppeteer.page.waitFor(1000);
+
+    await this.puppeteer.page.waitForSelector(`.episodes .active`);
+    await this.puppeteer.page.click(`.episodes .active`, clickOptions);
+
+    await this.puppeteer.page.waitForSelector(`#player`);
+    await this.puppeteer.page.click(`#player`, clickOptions);
+
     await this.puppeteer.page.waitForSelector(`#player iframe`);
 
     const videoIframeUrl = await this.puppeteer.page.$eval(
       "#player iframe",
       element => element.getAttribute("src")
     );
+
+    /**
+     * It is much faster to only get the iframe url if that's all we need
+     */
+    if (options?.onlyGetIframeUrl) {
+      return {
+        video: "",
+        iframe: videoIframeUrl
+      };
+    }
 
     await this.goto(videoIframeUrl);
 
@@ -105,7 +184,7 @@ export class Anime extends Scraper {
         const imageElem: HTMLElement = elem.querySelector("img");
         const linkElem: HTMLElement = elem.querySelector(".info a");
         return {
-          name: linkElem.innerHTML,
+          name: linkElem.innerText,
           url: linkElem.getAttribute("href"),
           image: imageElem.getAttribute("src")
         };
@@ -114,8 +193,8 @@ export class Anime extends Scraper {
 
     const maxPageNumber = await this.puppeteer.page.$eval(
       "form .total",
-      element => {
-        return Number(element.innerHTML);
+      (element: HTMLElement) => {
+        return Number(element.innerText);
       }
     );
 

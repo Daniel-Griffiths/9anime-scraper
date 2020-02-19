@@ -26,3 +26,13 @@ export interface IPuppeteerInstance {
   page: Page;
   browser: Browser;
 }
+
+export interface IShowDetails {
+  name: string;
+  type: string;
+  genres: string[];
+  duration: string;
+  premiered: string;
+  completed: boolean;
+  description: string;
+}

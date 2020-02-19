@@ -13,6 +13,18 @@ export class Scraper {
   };
 
   /**
+   * Safer version of $eval that does not crash when the element is missing
+   */
+  public $eval = async <T>(
+    selector: string,
+    callback: (element: Element) => T | Promise<T>
+  ) => {
+    return (await this.puppeteer.page.$(selector))
+      ? await this.puppeteer.page.$eval(selector, callback)
+      : null;
+  };
+
+  /**
    * Navigate to a page and retry up to X
    * times if the page returns a non-success status code.
    *
