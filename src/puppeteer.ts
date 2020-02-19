@@ -90,7 +90,7 @@ export const createPuppeteerInstance = async (
       "fonts.googleapis.com",
       "google-analytics.com",
       "connect.facebook.net",
-      "platform.twitter.com",
+      "platform.twitterp.com",
       "9anime-to.disqus.com",
       "sb.scorecardresearch.com",
       "native.propellerclick.com",
@@ -99,7 +99,13 @@ export const createPuppeteerInstance = async (
       "9anime.to/user/ajax/menu-bar"
     ];
 
-    const blacklistedFileTypes = ["image", "font", "json", "media"];
+    const blacklistedFileTypes = [
+      "stylesheet",
+      "image",
+      "font",
+      "json",
+      "media"
+    ];
 
     if (blacklistedDomains.includes(new URL(request.url()).host)) {
       return request.abort();

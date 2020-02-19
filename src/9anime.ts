@@ -129,10 +129,32 @@ export class Anime extends Scraper {
     );
 
     const data = await this.puppeteer.page.evaluate(async videoId => {
-      const response = await fetch(
+      const sleep = async (ms: number) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      };
+
+      const fetchRetry = async (url: string, limit: number = 0) => {
+        if (limit > 5) {
+          throw new Error(
+            `Tried fetching the episode details ${limit} times but failed.`
+          );
+        }
+
+        try {
+          const response = await fetch(
+            `ajax/episode/info?ts=1582099200&_=780&id=${videoId}&server=35`
+          );
+
+          return await response.json();
+        } catch (error) {
+          await sleep(1000);
+          return await fetchRetry(url, limit + 1);
+        }
+      };
+
+      return fetchRetry(
         `ajax/episode/info?ts=1582099200&_=780&id=${videoId}&server=35`
       );
-      return await response.json();
     }, videoId);
 
     const videoIframeUrl = data.target;
