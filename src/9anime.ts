@@ -1,4 +1,3 @@
-import { api } from "./api";
 import { Scraper } from "./scraper";
 import { IShow, IVideo, IEpisode, ILink, IShowDetails } from "./types";
 
@@ -129,9 +128,12 @@ export class Anime extends Scraper {
       element => element.getAttribute("data-id")
     );
 
-    const { data } = await api.get(
-      `ajax/episode/info?ts=1582099200&_=780&id=${videoId}&server=35`
-    );
+    const data = await this.puppeteer.page.evaluate(async videoId => {
+      const response = await fetch(
+        `ajax/episode/info?ts=1582099200&_=780&id=${videoId}&server=35`
+      );
+      return await response.json();
+    }, videoId);
 
     const videoIframeUrl = data.target;
 
