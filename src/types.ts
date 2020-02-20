@@ -30,6 +30,7 @@ export interface IPuppeteerInstance {
 export interface IShowDetails {
   name: string;
   type: string;
+  image: string;
   genres: string[];
   duration: string;
   premiered: string;

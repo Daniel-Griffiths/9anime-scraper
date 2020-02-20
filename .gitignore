@@ -1,5 +1,4 @@
 dist
-test.ts
 node_modules
 package-lock.json
 shows.json

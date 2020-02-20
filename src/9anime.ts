@@ -68,9 +68,15 @@ export class Anime extends Scraper {
       (element: HTMLElement) => element.innerText
     );
 
+    const image = await this.$eval(
+      ".thumb.col-md-5.hidden-sm.hidden-xs > img",
+      (element: HTMLElement) => element.getAttribute("src")
+    );
+
     return {
       name,
       type,
+      image,
       genres,
       duration,
       premiered,
