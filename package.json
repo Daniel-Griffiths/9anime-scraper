@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@types/inquirer": "^6.5.0",
-    "@types/puppeteer": "^2.0.0",
+    "@types/puppeteer": "^3.0.0",
     "axios": "^0.19.2",
     "inquirer": "^7.0.4",
     "open": "^7.0.2",
