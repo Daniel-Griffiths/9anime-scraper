@@ -55,13 +55,13 @@ export const createPuppeteerInstance = async (
       "--disable-offer-upload-credit-cards",
       "--disable-background-timer-throttling",
       "--disable-client-side-phishing-detection",
-      "--disable-offer-store-unmasked-wallet-cards"
-    ]
+      "--disable-offer-store-unmasked-wallet-cards",
+    ],
   }
 ): Promise<IPuppeteerInstance> => {
   const browser = await puppeteer.launch(options);
 
-  browser.on("targetcreated", async target => {
+  browser.on("targetcreated", async (target) => {
     const page = await target.page();
 
     if (page && (await browser.pages()).length > 2) page.close();
@@ -71,7 +71,7 @@ export const createPuppeteerInstance = async (
 
   await page.setRequestInterception(true);
 
-  await page.on("request", request => {
+  await page.on("request", (request) => {
     const blacklistedDomains = [
       "zap.buzz",
       "google.com",
@@ -96,7 +96,7 @@ export const createPuppeteerInstance = async (
       "native.propellerclick.com",
       "links.services.disqus.com",
       "cdn.runative-syndicate.com",
-      "9anime.to/user/ajax/menu-bar"
+      "9anime.to/user/ajax/menu-bar",
     ];
 
     const blacklistedFileTypes = [
@@ -104,7 +104,7 @@ export const createPuppeteerInstance = async (
       "image",
       "font",
       "json",
-      "media"
+      "media",
     ];
 
     if (blacklistedDomains.includes(new URL(request.url()).host)) {

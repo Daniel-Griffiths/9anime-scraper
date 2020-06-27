@@ -5,6 +5,7 @@ import open from "open";
 import inquirer from "inquirer";
 
 import { Anime } from "./9anime";
+import { Log } from "./utils/log";
 import { createPuppeteerInstance } from "./puppeteer";
 
 /**
@@ -17,10 +18,10 @@ import { createPuppeteerInstance } from "./puppeteer";
 function _toInquirerQuestions<T extends { name: string }>(
   items: T[]
 ): { value: T; name: string }[] {
-  return items.map(item => {
+  return items.map((item) => {
     return {
       value: item,
-      name: item.name
+      name: item.name,
     };
   });
 }
@@ -36,8 +37,8 @@ function _toInquirerQuestions<T extends { name: string }>(
     {
       type: "input",
       name: "anime",
-      message: "What anime are you looking for?"
-    }
+      message: "What anime are you looking for?",
+    },
   ]);
 
   const spinner = ora(`Searching for ${anime}`).start();
@@ -46,7 +47,7 @@ function _toInquirerQuestions<T extends { name: string }>(
 
   if (!shows || shows.length < 1) {
     spinner.stop();
-    console.log(`Could not find any seasons for "${anime}"`);
+    Log.warn(`Could not find any seasons for "${anime}"`);
     process.exit();
   }
 
@@ -60,8 +61,8 @@ function _toInquirerQuestions<T extends { name: string }>(
       type: "list",
       name: "show",
       message: "Choose a season:",
-      choices: _toInquirerQuestions(shows)
-    }
+      choices: _toInquirerQuestions(shows),
+    },
   ]);
 
   spinner.start("Getting episodes");
@@ -70,7 +71,7 @@ function _toInquirerQuestions<T extends { name: string }>(
 
   if (!episodes || episodes.length < 1) {
     spinner.stop();
-    console.log(`Could not find any episodes for "${anime}"`);
+    Log.warn(`Could not find any episodes for "${anime}"`);
     process.exit();
   }
 
@@ -84,8 +85,8 @@ function _toInquirerQuestions<T extends { name: string }>(
       type: "list",
       name: "episode",
       message: "Choose a episode:",
-      choices: _toInquirerQuestions(episodes)
-    }
+      choices: _toInquirerQuestions(episodes),
+    },
   ]);
 
   spinner.start("Opening video");
@@ -95,4 +96,6 @@ function _toInquirerQuestions<T extends { name: string }>(
   spinner.stop();
 
   await open(video, { app: ["vlc", "--fullscreen", "--play-and-exit"] });
+
+  scraper.close();
 })();

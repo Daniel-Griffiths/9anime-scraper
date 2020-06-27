@@ -11,14 +11,14 @@ export class Anime extends Scraper {
   public search = async (show: string): Promise<IShow[]> => {
     await this.goto(`https://9anime.to/search?keyword=${show}`);
 
-    return await this.puppeteer.page.$$eval(".film-list .item", elements =>
+    return await this.puppeteer.page.$$eval(".film-list .item", (elements) =>
       elements.map((elem: HTMLElement) => {
         const imageElem: HTMLElement = elem.querySelector("img");
         const linkElem: HTMLElement = elem.querySelector("a:last-child");
         return {
           name: linkElem.innerText,
           url: linkElem.getAttribute("href"),
-          image: imageElem.getAttribute("src")
+          image: imageElem.getAttribute("src"),
         };
       })
     );
@@ -81,7 +81,7 @@ export class Anime extends Scraper {
       duration,
       premiered,
       completed,
-      description
+      description,
     };
   };
 
@@ -99,16 +99,16 @@ export class Anime extends Scraper {
 
     // sometimes this needs to be clicked multiple times to work due to ads opening
     await this.puppeteer.page.click(mp4UploadTab, {
-      clickCount: 5
+      clickCount: 5,
     });
 
     return await this.puppeteer.page.$$eval(
       '.server[data-name="35"] .episodes a',
-      elements =>
+      (elements) =>
         elements.map((elem: HTMLElement) => {
           return {
             name: `Episode ${elem.innerText}`,
-            url: `https://9anime.to${elem.getAttribute("href")}`
+            url: `https://9anime.to${elem.getAttribute("href")}`,
           };
         })
     );
@@ -131,12 +131,12 @@ export class Anime extends Scraper {
 
     const videoId = await this.puppeteer.page.$eval(
       ".episodes .active",
-      element => element.getAttribute("data-id")
+      (element) => element.getAttribute("data-id")
     );
 
-    const data = await this.puppeteer.page.evaluate(async videoId => {
+    const data = await this.puppeteer.page.evaluate(async (videoId) => {
       const sleep = async (ms: number) => {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
       };
 
       const fetchRetry = async (url: string, limit: number = 0) => {
@@ -171,19 +171,20 @@ export class Anime extends Scraper {
     if (options?.onlyGetIframeUrl) {
       return {
         video: "",
-        iframe: videoIframeUrl
+        iframe: videoIframeUrl,
       };
     }
 
     await this.goto(videoIframeUrl);
 
-    const videoUrl = await this.puppeteer.page.$eval("video", element =>
-      element.getAttribute("src")
+    const videoUrl = await this.puppeteer.page.$eval(
+      "video source",
+      (element) => element.getAttribute("src")
     );
 
     return {
       video: videoUrl,
-      iframe: videoIframeUrl
+      iframe: videoIframeUrl,
     };
   };
 
@@ -203,14 +204,14 @@ export class Anime extends Scraper {
   ) => {
     await this.goto(`https://9anime.to/az-list?page=${pageNumber}`);
 
-    const links = await this.puppeteer.page.$$eval(".items .item", elements =>
+    const links = await this.puppeteer.page.$$eval(".items .item", (elements) =>
       elements.map((elem: HTMLElement) => {
         const imageElem: HTMLElement = elem.querySelector("img");
         const linkElem: HTMLElement = elem.querySelector(".info a");
         return {
           name: linkElem.innerText,
           url: linkElem.getAttribute("href"),
-          image: imageElem.getAttribute("src")
+          image: imageElem.getAttribute("src"),
         };
       })
     );
@@ -227,7 +228,7 @@ export class Anime extends Scraper {
     if (pageNumber < maxPageNumber) {
       return await this.scrapeAllShows(pageNumber + 1, [
         ...initialLinks,
-        ...links
+        ...links,
       ]);
     }
 

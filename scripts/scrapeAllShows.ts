@@ -5,7 +5,7 @@ import fs from "fs";
 import { IShow } from "../src/types";
 import { Anime, createPuppeteerInstance } from "../index";
 
-const shows = JSON.parse(fs.readFileSync("../shows.json", "utf8"));
+const shows = JSON.parse(fs.readFileSync("./shows.json", "utf8"));
 
 let cachedVideos = [];
 
@@ -21,7 +21,7 @@ const scrapeAllShows = async () => {
     for await (const show of shows as IShow[]) {
       i++;
 
-      const filename = `../shows/${i}-${show.name.replace(
+      const filename = `./shows/${i}-${show.name.replace(
         /[/\\?%*:|"<>]/g,
         ""
       )}.json`;
@@ -41,7 +41,7 @@ const scrapeAllShows = async () => {
       for await (const episode of episodes) {
         if (cachedVideos.length <= j) {
           const { iframe } = await anime.getVideo(episode.url, {
-            onlyGetIframeUrl: true
+            onlyGetIframeUrl: true,
           });
 
           cachedVideos.push(iframe);
@@ -58,7 +58,7 @@ const scrapeAllShows = async () => {
 
       const finalShow = {
         details,
-        episodes
+        episodes,
       };
 
       fs.writeFileSync(filename, JSON.stringify(finalShow, null, 2));
