@@ -1,5 +1,5 @@
 import chromium from "chrome-aws-lambda";
-import puppeteer, { LaunchOptions } from "puppeteer-core";
+import { LaunchOptions } from "puppeteer-core";
 
 import { IPuppeteerInstance } from "./types";
 
@@ -20,12 +20,10 @@ export const createPuppeteerInstance = async (
     executablePath: await chromium.executablePath,
   };
 
-  const browser: IPuppeteerInstance["browser"] = await chromium.puppeteer.launch(
-    {
-      ...defaultOptions,
-      ...options,
-    }
-  );
+  const browser = await chromium.puppeteer.launch({
+    ...defaultOptions,
+    ...options,
+  });
 
   browser.on("targetcreated", async (target) => {
     const page = await target.page();
