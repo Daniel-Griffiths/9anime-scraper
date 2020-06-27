@@ -1,4 +1,4 @@
-import { Response } from "puppeteer-core";
+import { Response } from "puppeteer";
 import { IPuppeteerInstance } from "./types";
 
 export class Scraper {
