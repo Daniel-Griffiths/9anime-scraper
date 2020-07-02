@@ -2,31 +2,40 @@
  * Quick and dirty script for scraping all shows.
  */
 import fs from "fs";
+import low from "lowdb";
+import FileSync from "lowdb/adapters/FileSync";
+
 import { IShow } from "../src/types";
 import { Anime, createPuppeteerInstance } from "../index";
 
 const shows = JSON.parse(fs.readFileSync("./shows.json", "utf8"));
 
+const adapter = new FileSync("./db.json");
+const db = low(adapter);
+
+// Set some defaults (required if your JSON file is empty)
+db.defaults({ shows: [] }).write();
+
 let cachedVideos = [];
 
 const scrapeAllShows = async () => {
-  console.log(cachedVideos);
-
   try {
     var puppeteerInstance = await createPuppeteerInstance();
 
     let i = 0;
     const anime = new Anime(puppeteerInstance);
 
+    const existingShows = db.get("shows").value();
+
     for await (const show of shows as IShow[]) {
       i++;
 
-      const filename = `./shows/${i}-${show.name.replace(
-        /[/\\?%*:|"<>]/g,
-        ""
-      )}.json`;
-
-      if (fs.existsSync(filename)) {
+      if (
+        existingShows.find(
+          (existingShow) => existingShow.details.name === show.name
+        )
+      ) {
+        console.log(`${show.name} already exists, skipping...`);
         continue;
       }
 
@@ -39,6 +48,7 @@ const scrapeAllShows = async () => {
       let video = "";
 
       for await (const episode of episodes) {
+        console.log(`- scraping episode ${j + 1}/${episodes.length}`);
         if (cachedVideos.length <= j) {
           const { iframe } = await anime.getVideo(episode.url, {
             onlyGetIframeUrl: true,
@@ -57,11 +67,13 @@ const scrapeAllShows = async () => {
       cachedVideos = [];
 
       const finalShow = {
+        id: i,
         details,
         episodes,
       };
 
-      fs.writeFileSync(filename, JSON.stringify(finalShow, null, 2));
+      // @ts-ignore
+      db.get("shows").push(finalShow).write();
     }
 
     anime.close();

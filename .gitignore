@@ -3,3 +3,4 @@ node_modules
 package-lock.json
 shows.json
 /shows
+db.json
