@@ -1,6 +1,6 @@
 {
   "name": "9anime",
-  "version": "2.0.23",
+  "version": "2.0.24",
   "description": "A CLI script to scrape and watch shows from 9anime",
   "main": "./dist/index.js",
   "author": "Daniel Griffiths",
@@ -28,6 +28,7 @@
     "inquirer": "^7.3.0",
     "open": "^7.0.4",
     "ora": "^4.0.4",
+    "chrome-finder": "^1.0.7",
     "puppeteer-core": "^5.0.0"
   },
   "devDependencies": {
@@ -35,7 +36,6 @@
     "jest": "^26.1.0",
     "ts-jest": "^26.1.1",
     "ts-node": "^8.10.2",
-    "typescript": "^3.9.6",
-    "chrome-finder": "^1.0.7"
+    "typescript": "^3.9.6"
   }
 }
