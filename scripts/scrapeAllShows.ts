@@ -32,7 +32,8 @@ const scrapeAllShows = async () => {
 
       if (
         existingShows.find(
-          (existingShow) => existingShow.details.name === show.name
+          (existingShow) =>
+            existingShow.details.name === show.name.replace(/&amp;/g, "&")
         )
       ) {
         console.log(`${show.name} already exists, skipping...`);
