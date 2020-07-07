@@ -30,12 +30,14 @@ const scrapeAllShows = async () => {
     for await (const show of shows as IShow[]) {
       i++;
 
-      if (
-        existingShows.find(
-          (existingShow) =>
-            existingShow.details.name === show.name.replace(/&amp;/g, "&")
-        )
-      ) {
+      // @ts-ignore
+      if (show.dead) {
+        console.log(`${show.name} is dead, skipping...`);
+        continue;
+      }
+
+      if (existingShows.find((existingShow) => existingShow.id === i)) {
+        // if (!show.name.includes("KILL la KILL")) {
         console.log(`${show.name} already exists, skipping...`);
         continue;
       }

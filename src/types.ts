@@ -6,6 +6,10 @@ export interface IShow {
   image: string;
 }
 
+export interface IShowWithEpisodes extends IShow {
+  episodes: IEpisode[];
+}
+
 export interface IEpisode {
   url: string;
   name: string;
