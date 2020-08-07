@@ -3,6 +3,7 @@
     "target": "es2018",
     "outDir": "dist",
     "declaration": true,
+    "skipLibCheck": true,
     "module": "commonjs",
     "esModuleInterop": true,
     "moduleResolution": "node"
