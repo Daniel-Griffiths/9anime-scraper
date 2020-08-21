@@ -22,7 +22,7 @@
   "dependencies": {
     "@types/inquirer": "^7.3.0",
     "@types/puppeteer-core": "^2.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.20.0",
     "chalk": "^4.1.0",
     "chrome-aws-lambda": "^5.2.0",
     "chrome-finder": "^1.0.7",
