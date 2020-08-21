@@ -1,4 +1,4 @@
-import { Page, Browser } from "puppeteer-core";
+import { Page, Browser } from "puppeteer";
 
 export interface IShow {
   url: string;
