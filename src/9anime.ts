@@ -1,4 +1,7 @@
+import cheerio from "cheerio";
+
 import { Scraper } from "./scraper";
+import { WEBSITE_URL } from "./constants/9anime";
 import { IShow, IVideo, IEpisode, ILink, IShowDetails } from "./types";
 
 export class Anime extends Scraper {
@@ -9,7 +12,7 @@ export class Anime extends Scraper {
    * @returns {Promise<IShow[]>}
    */
   public search = async (show: string): Promise<IShow[]> => {
-    await this.goto(`https://9anime.to/search?keyword=${show}`);
+    await this.goto(`${WEBSITE_URL}/search?keyword=${show}`);
 
     return await this.puppeteer.page.$$eval(".film-list .item", (elements) =>
       elements.map((elem: HTMLElement) => {
@@ -92,26 +95,20 @@ export class Anime extends Scraper {
    * @returns {Promise<IEpisode[]>}
    */
   public getEpisodes = async (showUrl: string): Promise<IEpisode[]> => {
-    const mp4UploadTab = '.tab[data-name="35"]';
-
     await this.goto(showUrl);
-    await this.puppeteer.page.waitForSelector(mp4UploadTab);
 
-    // sometimes this needs to be clicked multiple times to work due to ads opening
-    await this.puppeteer.page.click(mp4UploadTab, {
-      clickCount: 5,
-    });
+    const html = await this._getEpisodeHTMLFromUrl(showUrl);
 
-    return await this.puppeteer.page.$$eval(
-      '.server[data-name="35"] .episodes a',
-      (elements) =>
-        elements.map((elem: HTMLElement) => {
-          return {
-            name: `Episode ${elem.innerText}`,
-            url: `https://9anime.to${elem.getAttribute("href")}`,
-          };
-        })
-    );
+    const $ = cheerio.load(html);
+
+    return $('.server[data-name="35"] .episodes a')
+      .toArray()
+      .map((el) => {
+        return {
+          url: `${WEBSITE_URL}${el.attribs.href}`,
+          name: `Episode ${el.children[0].data}`,
+        };
+      });
   };
 
   /**
@@ -127,12 +124,22 @@ export class Anime extends Scraper {
   ): Promise<IVideo> => {
     await this.goto(episodeUrl);
 
-    await this.puppeteer.page.waitForSelector(`.episodes .active`);
+    const html = await this._getEpisodeHTMLFromUrl(episodeUrl);
 
-    const videoId = await this.puppeteer.page.$eval(
-      ".episodes .active",
-      (element) => element.getAttribute("data-id")
-    );
+    const $ = cheerio.load(html);
+
+    const episodeId = this._getEpisodeIdFromUrl(episodeUrl);
+    const videoId = $('.server[data-name="35"] .episodes a')
+      .toArray()
+      .map((el) => {
+        return {
+          id: el.attribs["data-id"],
+          url: `${WEBSITE_URL}${el.attribs.href}`,
+        };
+      })
+      .find((episode) => {
+        return episode.url.includes(episodeId);
+      }).id;
 
     const data = await this.puppeteer.page.evaluate(async (videoId) => {
       const sleep = async (ms: number) => {
@@ -148,7 +155,7 @@ export class Anime extends Scraper {
 
         try {
           const response = await fetch(
-            `ajax/episode/info?ts=1582099200&_=780&id=${videoId}&server=35`
+            `/ajax/episode/info?id=${videoId}&server=35`
           );
 
           return await response.json();
@@ -158,9 +165,7 @@ export class Anime extends Scraper {
         }
       };
 
-      return fetchRetry(
-        `ajax/episode/info?ts=1582099200&_=780&id=${videoId}&server=35`
-      );
+      return fetchRetry(`/ajax/episode/info?id=${videoId}&server=35`);
     }, videoId);
 
     const videoIframeUrl = data.target;
@@ -202,7 +207,7 @@ export class Anime extends Scraper {
     pageNumber: number = 1,
     initialLinks: ILink[] = []
   ) => {
-    await this.goto(`https://9anime.to/az-list?page=${pageNumber}`);
+    await this.goto(`${WEBSITE_URL}/az-list?page=${pageNumber}`);
 
     const links = await this.puppeteer.page.$$eval(".items .item", (elements) =>
       elements.map((elem: HTMLElement) => {
@@ -233,5 +238,21 @@ export class Anime extends Scraper {
     }
 
     return initialLinks;
+  };
+
+  private _getShowIdFromUrl = (url: string): string => {
+    return url.split("/")[4].split(".")[1];
+  };
+
+  private _getEpisodeIdFromUrl = (url: string): string => {
+    return url.split("/")[5];
+  };
+
+  private _getEpisodeHTMLFromUrl = async (showUrl: string) => {
+    return await this.puppeteer.page.evaluate(async (showId) => {
+      const response = await fetch(`/ajax/film/servers?id=${showId}`);
+      const { html } = await response.json();
+      return html;
+    }, this._getShowIdFromUrl(showUrl));
   };
 }

@@ -1,13 +1,13 @@
 import puppeteer from "puppeteer-extra";
 import { LaunchOptions } from "puppeteer";
-import puppeteerFirefox from "puppeteer-firefox";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
 import { IPuppeteerInstance } from "./types";
+import { WEBSITE_URL } from "./constants/9anime";
 
 puppeteer.use(StealthPlugin());
 
-type Options = LaunchOptions & { firefox?: boolean };
+type Options = LaunchOptions;
 
 /**
  * Createa a new Puppeteer instance
@@ -68,16 +68,6 @@ export const createPuppeteerInstance = async (
     ],
   };
 
-  if (options?.firefox !== false) {
-    const browser = await puppeteerFirefox.launch(defaultOptions);
-
-    await browser.userAgent();
-
-    const page = await browser.newPage();
-
-    return { page, browser };
-  }
-
   const browser = await puppeteer.launch({ ...defaultOptions, ...options });
 
   browser.on("targetcreated", async (target) => {
@@ -98,43 +88,73 @@ export const createPuppeteerInstance = async (
       "defpush.com",
       "twitter.com",
       "gstatic.com",
+      "go.bebi.com",
+      "st.bebi.com",
       "facebook.com",
       "mp4upload.com",
       "jsc.mgrid.com",
+      "whos.amung.us",
       "s7.addthis.com",
       "indlzxgptf.com",
       "cm.steepto.com",
+      "www.google.com",
       "c.disquscdn.com",
+      "suburbglaze.com",
+      "static.akacdn.ru",
+      "jojoie8eamus.com",
+      "evergreensame.com",
       "servicer.mgrid.com",
+      "demand.bidgear.com",
+      "ie8eamus.com/sfp.js",
       "fonts.googleapis.com",
       "google-analytics.com",
       "connect.facebook.net",
-      "platform.twitterp.com",
       "9anime-to.disqus.com",
+      "cdnjs.cloudflare.com",
+      "platform.bidgear.com",
+      "platform.twitter.com",
+      "platform.twitterp.com",
+      "jojoevergreensame.com",
+      "r.remarketingpixel.com",
+      "slaveforgetfulsneak.com",
       "sb.scorecardresearch.com",
+      "www.google-analytics.com",
       "native.propellerclick.com",
       "links.services.disqus.com",
       "cdn.runative-syndicate.com",
       "9anime.to/user/ajax/menu-bar",
+      "9anime.ru/user/ajax/menu-bar",
+      "d24ak3f2b.top/advertisers.js",
+      "d24ak3f2b.top/advertisers.js",
+      "invitesuperstitiousadmire.com",
     ];
 
     const blacklistedFileTypes = [
-      "stylesheet",
-      "image",
       "font",
       "json",
+      "image",
       "media",
+      "script",
+      "stylesheet",
     ];
 
     if (request.isNavigationRequest() && request.redirectChain().length) {
       request.abort();
     }
 
-    if (blacklistedDomains.includes(new URL(request.url()).host)) {
+    if (
+      blacklistedDomains.includes(new URL(request.url()).host) ||
+      request
+        .url()
+        .includes("https://staticf.akacdn.ru/assets/min/frontend/all.js")
+    ) {
       return request.abort();
     }
 
-    if (blacklistedFileTypes.indexOf(request.resourceType()) !== -1) {
+    if (
+      request.url().includes(WEBSITE_URL) &&
+      blacklistedFileTypes.indexOf(request.resourceType()) !== -1
+    ) {
       return request.abort();
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "9anime",
-  "version": "2.0.27",
+  "version": "2.0.28",
   "description": "A CLI script to scrape and watch shows from 9anime",
   "main": "./dist/index.js",
   "author": "Daniel Griffiths",
@@ -20,17 +20,18 @@
     "url": "git://github.com/Daniel-Griffiths/9anime-scraper.git"
   },
   "dependencies": {
+    "@types/cheerio": "^0.22.21",
     "@types/inquirer": "^7.3.1",
     "@types/puppeteer": "^2.0.0",
     "axios": "^0.20.0",
     "chalk": "^4.1.0",
+    "cheerio": "^1.0.0-rc.3",
     "inquirer": "^7.3.3",
     "open": "^7.1.0",
     "ora": "^5.0.0",
     "puppeteer": "^5.2.1",
     "puppeteer-extra": "^3.1.15",
-    "puppeteer-extra-plugin-stealth": "^2.6.1",
-    "puppeteer-firefox": "^0.5.1"
+    "puppeteer-extra-plugin-stealth": "^2.6.1"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
