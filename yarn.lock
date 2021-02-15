@@ -3078,9 +3078,9 @@ onetime@^5.1.0:
     mimic-fn "^2.1.0"
 
 open@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/open/-/open-7.1.0.tgz#68865f7d3cb238520fa1225a63cf28bcf8368a1c"
-  integrity sha512-lLPI5KgOwEYCDKXf4np7y1PBEkj7HYIyP2DY8mVDRnx0VIIu6bNrRB0R66TuO7Mack6EnTNLm4uvcl1UoklTpA==
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.4.1.tgz#4ccedc11ca348d398378ffb39c71357df55fe6f7"
+  integrity sha512-Pxv+fKRsd/Ozflgn2Gjev1HZveJJeKR6hKKmdaImJMuEZ6htAvCTbcMABJo+qevlAelTLCrEK3YTKZ9fVTcSPw==
   dependencies:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
